@@ -1,7 +1,7 @@
-defmodule Salemove.HttpClient.Middleware.TapperTest do
+defmodule Tesla.Middleware.TapperTest do
   use ExUnit.Case, async: false
 
-  @middleware Salemove.HttpClient.Middleware.Tapper
+  @middleware Tesla.Middleware.Tapper
 
   alias Tapper.Protocol.BinaryAnnotation
 

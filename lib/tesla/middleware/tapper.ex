@@ -1,4 +1,4 @@
-defmodule Salemove.HttpClient.Middleware.Tapper do
+defmodule Tesla.Middleware.Tapper do
   @behaviour Tesla.Middleware
 
   @moduledoc """
@@ -11,7 +11,7 @@ defmodule Salemove.HttpClient.Middleware.Tapper do
   defmodule MyClient do
     use Tesla
 
-    plug Salemove.HttpClient.Middleware.Tapper
+    plug Tesla.Middleware.Tapper
   end
   ```
   """
