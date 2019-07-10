@@ -5,7 +5,7 @@ defmodule TeslaMiddlewareTapper.MixProject do
     [
       app: :tesla_middleware_tapper,
       version: "0.1.1",
-      elixir: "~> 1.6",
+      elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
@@ -38,7 +38,7 @@ defmodule TeslaMiddlewareTapper.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:tesla, "~> 0.9"},
+      {:tesla, "~> 1.0"},
       {:tapper_plug, "~> 0.3"},
       {:ex_doc, "~> 0.18.0", only: :dev},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false}
