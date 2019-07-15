@@ -35,11 +35,9 @@ defmodule Tesla.Middleware.Tapper do
       )
 
     headers = Tapper.Plug.HeaderPropagation.encode(trace)
-    env = %{env | headers: Enum.into(headers, env.headers)}
+    env = Tesla.put_headers(env, headers)
 
-    try do
-      env = Tesla.run(env, next)
-
+    with {:ok, env} <- Tesla.run(env, next) do
       if env.status >= 500 do
         update_span(Tapper.error())
       end
@@ -52,9 +50,9 @@ defmodule Tesla.Middleware.Tapper do
         ]
       )
 
-      env
-    rescue
-      ex in Tesla.Error ->
+      {:ok, env}
+    else
+      {:error, %Tesla.Error{} = ex} ->
         stacktrace = System.stacktrace()
 
         finish_span(
@@ -67,7 +65,10 @@ defmodule Tesla.Middleware.Tapper do
           ]
         )
 
-        reraise ex, stacktrace
+        {:error, ex}
+
+      {:error, error} ->
+        {:error, error}
     end
   end
 

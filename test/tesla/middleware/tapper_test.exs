@@ -11,7 +11,7 @@ defmodule Tesla.Middleware.TapperTest do
     url = "http://example.com"
     incoming_env = %Tesla.Env{method: :get, url: url}
 
-    action = fn env -> %{env | status: 200} end
+    action = fn env -> {:ok, %{env | status: 200}} end
     @middleware.call(incoming_env, [fn: action], reporter: reporter)
 
     assert_receive {^ref, [span]}, 1_000
@@ -31,7 +31,7 @@ defmodule Tesla.Middleware.TapperTest do
     url = "http://example.com"
     incoming_env = %Tesla.Env{method: :post, url: url}
 
-    action = fn env -> %{env | status: 201} end
+    action = fn env -> {:ok, %{env | status: 201}} end
     @middleware.call(incoming_env, [fn: action], reporter: reporter)
 
     assert_receive {^ref, [span]}, 1_000
@@ -51,7 +51,7 @@ defmodule Tesla.Middleware.TapperTest do
     url = "http://example.com"
     incoming_env = %Tesla.Env{method: :get, url: url}
 
-    action = fn env -> %{env | status: 500} end
+    action = fn env -> {:ok, %{env | status: 500}} end
     @middleware.call(incoming_env, [fn: action], reporter: reporter)
 
     assert_receive {^ref, [span]}, 1_000
@@ -71,20 +71,19 @@ defmodule Tesla.Middleware.TapperTest do
     url = "http://example.com"
     incoming_env = %Tesla.Env{method: :get, url: url}
 
-    action = fn _env ->
-      raise Tesla.Error, reason: :econnrefused
+    action = fn env ->
+      {:error, %Tesla.Error{env: env, reason: :econnrefused}}
     end
 
-    assert_raise Tesla.Error, fn ->
-      @middleware.call(incoming_env, [fn: action], reporter: reporter)
-    end
+    assert {:error, %Tesla.Error{}} =
+             @middleware.call(incoming_env, [fn: action], reporter: reporter)
 
     assert_receive {^ref, [span]}, 1_000
     assert operation_name(span) == "GET"
     assert [:cs, :error, :cr] = annotation_keys(span)
 
     assert [
-             %BinaryAnnotation{key: :error, value: "%Tesla.Error{message: \"\", reason: :econnrefused}"},
+             %BinaryAnnotation{key: :error},
              %BinaryAnnotation{key: "http.status_code", value: 0},
              %BinaryAnnotation{key: "http.url", value: ^url},
              %BinaryAnnotation{key: "http.method", value: "GET"}

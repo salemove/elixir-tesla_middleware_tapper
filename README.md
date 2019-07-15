@@ -11,6 +11,8 @@
 The package can be installed by adding `tesla_middleware_tapper` to your list
 of dependencies in `mix.exs`:
 
+If you are using Tesla version `0.x`:
+
 ```elixir
 def deps do
   [
@@ -18,6 +20,17 @@ def deps do
   ]
 end
 ```
+
+If you are using Tesla version `1.0` or higher
+
+```elixir
+def deps do
+  [
+    {:tesla_middleware_tapper, "~> 0.2.0"}
+  ]
+end
+```
+
 
 Documentation can be found at [https://hexdocs.pm/tesla_middleware_tapper](https://hexdocs.pm/tesla_middleware_tapper).
 
