@@ -40,7 +40,7 @@ defmodule TeslaMiddlewareTapper.MixProject do
     [
       {:tesla, "~> 1.0"},
       {:tapper_plug, "~> 0.3"},
-      {:ex_doc, "~> 0.18.0", only: :dev},
+      {:ex_doc, "~> 0.21.2", only: :dev},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false}
     ]
   end
