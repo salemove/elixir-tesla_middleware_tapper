@@ -1,0 +1,18 @@
+name: Sync Projects with Snyk
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight
+  workflow_dispatch:  # Allows manual triggering
+
+permissions:
+  contents: read
+
+jobs:
+  sync-snyk-projects:
+    uses: salemove/glia-security-workflows/.github/workflows/snyk-projects-sync.yaml@e6b44aff4e15c507f30fd4ec7635586d3174cabe
+    with:
+      snyk-org-id: 'b8c0b6c5-a7a9-4c43-a3a3-2e9c1192b28f'
+    secrets:
+      SNYK_SYNC_TOKEN: ${{ secrets.SNYK_SYNC_TOKEN }}
+      GITHUB_PAT: ${{ secrets.SNYK_GITHUB_SYNC_TOKEN }}
