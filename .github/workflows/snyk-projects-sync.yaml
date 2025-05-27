@@ -3,16 +3,59 @@ name: Sync Projects with Snyk
 on:
   schedule:
     - cron: '0 0 * * *'  # Daily at midnight
-  workflow_dispatch:  # Allows manual triggering
 
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash -Euo pipefail {0}
+
 jobs:
-  sync-snyk-projects:
-    uses: salemove/glia-security-workflows/.github/workflows/snyk-projects-sync.yaml@e6b44aff4e15c507f30fd4ec7635586d3174cabe
-    with:
-      snyk-org-id: 'b8c0b6c5-a7a9-4c43-a3a3-2e9c1192b28f'
-    secrets:
-      SNYK_SYNC_TOKEN: ${{ secrets.SNYK_SYNC_TOKEN }}
-      GITHUB_PAT: ${{ secrets.SNYK_GITHUB_SYNC_TOKEN }}
+  snyk-api-import-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610  # v3
+        with:
+          node-version: 20
+
+      - name: Install Snyk API Import
+        run: npm install snyk-api-import@2.21.6 -g
+
+      - name: Run Snyk API Import Sync
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Convert comma-separated list to multiple --snykProduct arguments
+          PRODUCTS="${{ SNYK_PRODUCTS }}"
+          PRODUCT_ARGS=""
+        
+          # Create separate --snykProduct arguments for each product
+          IFS=',' read -ra PRODUCT_ARRAY <<< "$PRODUCTS"
+          for product in "${PRODUCT_ARRAY[@]}"; do
+              PRODUCT_ARGS="$PRODUCT_ARGS --snykProduct=$product"
+          done
+        
+          echo "Starting Snyk API Import with org: ${{ SNYK_ORG_ID }}"
+          # Run command with properly formatted product arguments
+          snyk-api-import sync --orgPublicId=${{ SNYK_ORG_ID }} --source=github $PRODUCT_ARGS
+        env:
+          DEBUG: '*snyk*'
+          SNYK_ORG_ID: 'b8c0b6c5-a7a9-4c43-a3a3-2e9c1192b28f'
+          SNYK_PRODUCTS: 'container,open-source,iac'
+          SNYK_TOKEN: ${{ secrets.SNYK_SYNC_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.SNYK_GITHUB_SYNC_TOKEN }}
+          
+      - name: Upload Snyk logs as artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
+        if: always()
+
+        with:
+          name: snyk-sync-logs
+          path: '/tmp/snyk-log'
+          retention-days: 7
