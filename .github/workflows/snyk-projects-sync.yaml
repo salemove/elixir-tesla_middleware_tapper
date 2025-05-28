@@ -32,7 +32,7 @@ jobs:
         run: |
           set -euo pipefail
           # Convert comma-separated list to multiple --snykProduct arguments
-          PRODUCTS="${{ SNYK_PRODUCTS }}"
+          PRODUCTS="$SNYK_PRODUCTS"
           PRODUCT_ARGS=""
         
           # Create separate --snykProduct arguments for each product
@@ -41,9 +41,9 @@ jobs:
               PRODUCT_ARGS="$PRODUCT_ARGS --snykProduct=$product"
           done
         
-          echo "Starting Snyk API Import with org: ${{ SNYK_ORG_ID }}"
+          echo "Starting Snyk API Import with org: $SNYK_ORG_ID"
           # Run command with properly formatted product arguments
-          snyk-api-import sync --orgPublicId=${{ SNYK_ORG_ID }} --source=github $PRODUCT_ARGS
+          snyk-api-import sync --orgPublicId=$SNYK_ORG_ID --source=github $PRODUCT_ARGS
         env:
           DEBUG: '*snyk*'
           SNYK_ORG_ID: 'b8c0b6c5-a7a9-4c43-a3a3-2e9c1192b28f'
