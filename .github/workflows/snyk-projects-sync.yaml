@@ -11,6 +11,9 @@ defaults:
   run:
     shell: bash -Euo pipefail {0}
 
+env:
+  SNYK_LOG_PATH: '/tmp/snyk-log'
+
 jobs:
   snyk-api-import-sync:
     runs-on: ubuntu-latest
@@ -57,5 +60,5 @@ jobs:
 
         with:
           name: snyk-sync-logs
-          path: '/tmp/snyk-log'
+          path: $SNYK_LOG_PATH
           retention-days: 7
