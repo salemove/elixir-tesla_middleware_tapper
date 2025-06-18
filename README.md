@@ -1,3 +1,7 @@
+# ⚠️ THIS REPOSITORY IS DEPRECATED AND WILL BE CLOSED
+
+**This repository is read-only and will be closed permanently on July 18, 2025.**
+
 # Tesla.Middleware.Tapper
 
 [![Build Status](https://travis-ci.org/salemove/elixir-tesla_middleware_tapper.svg?branch=master)](https://travis-ci.org/salemove/elixir-tesla_middleware_tapper)
